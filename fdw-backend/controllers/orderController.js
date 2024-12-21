@@ -1,6 +1,7 @@
 import orderModel from "../models/orderModel.models.js";
 import userModel from "../models/userModel.models.js";
 import Stripe from "stripe";
+import axios from "axios"
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
@@ -81,4 +82,47 @@ const userOrders = async (req, res) => {
   }
 };
 
-export { placeOrder, verifyOrder, userOrders };
+// list all orders for admin panel
+const listOrders = async (req, res) => {
+  try {
+    const orders = await orderModel.find({});
+    res.json({ success: true, data: orders });
+  } catch (error) {
+    console.log(error);
+    res.json({ success: false, message: "Error" });
+  }
+};
+
+// update order status from admin panel
+const updateStatus = async (req, res) => {
+  try {
+    await orderModel.findByIdAndUpdate(req.body.orderId, {
+      status: req.body.status,
+    });
+    res.json({ success: true, message: "Status Updated" });
+  } catch (error) {
+    console.log(error);
+    res.json({ success: false, message: "Error" });
+  }
+};
+
+//calculate the distance between the restaurant and customer address
+const calculateDistance = async (req, res) => {
+  const origin = "Bishnu Bihar Neamatpur Asansol 713359"
+  const destination = "Chinakuri Sunderchak 713360"
+  const apiKey = process.env.GOOGLE_MAP_API_KEY
+  const url = `https://maps.gomaps.pro/maps/api/distancematrix/json?destinations=${destination}&origins=${origin}&key=${apiKey}`;
+
+  try {
+    const response = await axios.get(url)
+    // console.log(response);
+    res.json({success: true, data: response.data})
+    console.log(response.data.rows[0].elements[0].distance.value); // this the distance in metres
+    
+  } catch (error) {
+    console.log(error);
+    res.json({success: false, message: "Error"})
+  }
+}
+
+export { placeOrder, verifyOrder, userOrders, listOrders, updateStatus, calculateDistance };
