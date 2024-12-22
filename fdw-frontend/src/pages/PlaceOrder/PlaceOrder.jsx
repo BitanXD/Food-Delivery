@@ -52,15 +52,37 @@ const PlaceOrder = () => {
     }
   };
 
+  const getDeliveryCharge = async () => {
+    const origin = `Bishnu Bihar Colony Neamatpur West Bengal`;
+    let destination = `${data.street} ${data.city} ${data.state}`;
+    console.log(destination);
+    const apiKey = import.meta.env.VITE_MAPS_API_KEY;
+    console.log(apiKey);
+    try {
+      let distanceData = await axios.get(
+        `https://maps.gomaps.pro/maps/api/distancematrix/json?destinations=${destination}&origins=${origin}&key=${apiKey}`
+      );
+      console.log(distanceData);
+      let distance = distanceData.data.rows[0].elements[0].distance.value;
+      let duration = distanceData.data.rows[0].elements[0].duration.value;
+
+      console.log(distance, duration);
+      
+    } catch (error) {
+      console.log(error);
+      
+    }
+  };
+
   const navigate = useNavigate();
 
   useEffect(() => {
-    if(!token){
-      navigate("/cart")
-    }else if(getTotalCartAmount() === 0){
-      navigate("/cart")
+    if (!token) {
+      navigate("/cart");
+    } else if (getTotalCartAmount() === 0) {
+      navigate("/cart");
     }
-  }, [token])
+  }, [token]);
 
   return (
     <form onSubmit={placeOrder} className="place-order">
@@ -166,6 +188,9 @@ const PlaceOrder = () => {
               </b>
             </div>
           </div>
+          <button onClick={getDeliveryCharge} type="button">
+            CHECK DELIVERY
+          </button>
           <button type="submit">PROCEED TO PAYMENT</button>
         </div>
       </div>
