@@ -39,7 +39,8 @@ const PlaceOrder = () => {
     let orderData = {
       address: data,
       items: orderItems,
-      amount: getTotalCartAmount() + 2,
+      amount: getTotalCartAmount() + distance * 1000 * 1.5,
+      distance: distance,
     };
     let response = await axios.post(url + "/api/order/place", orderData, {
       headers: { token },
@@ -52,6 +53,9 @@ const PlaceOrder = () => {
     }
   };
 
+  const [distance, setDistance] = useState(0)
+  const [duration, setDuration] = useState(0)
+
   const getDeliveryCharge = async () => {
     const origin = `Bishnu Bihar Colony Neamatpur West Bengal`;
     let destination = `${data.street} ${data.city} ${data.state}`;
@@ -63,8 +67,8 @@ const PlaceOrder = () => {
         `https://maps.gomaps.pro/maps/api/distancematrix/json?destinations=${destination}&origins=${origin}&key=${apiKey}`
       );
       console.log(distanceData);
-      let distance = distanceData.data.rows[0].elements[0].distance.value;
-      let duration = distanceData.data.rows[0].elements[0].duration.value;
+      setDistance(distanceData.data.rows[0].elements[0].distance.value);
+      setDuration(distanceData.data.rows[0].elements[0].duration.value);
 
       console.log(distance, duration);
       
@@ -177,14 +181,20 @@ const PlaceOrder = () => {
             </div>
             <hr />
             <div className="cart-total-details">
-              <p>Delivery Fee</p>
-              <p>$ {getTotalCartAmount() === 0 ? 0 : 2}</p>
+              <p>Distance: </p>
+              <p>{Math.round(distance / 1000)} km</p>
+            </div>
+            <hr />
+            <div className="cart-total-details">
+              <p>Delivery Fee (1.5 per km)</p>
+              
+              <p>$ {getTotalCartAmount() === 0 ? 0 : Math.round(distance / 1000 * 1.5)}</p>
             </div>
             <hr />
             <div className="cart-total-details">
               <b>Total</b>
               <b>
-                $ {getTotalCartAmount() === 0 ? 0 : getTotalCartAmount() + 2}
+                $ {getTotalCartAmount() === 0 ? 0 : getTotalCartAmount() + Math.round(distance / 1000 * 1.5)}
               </b>
             </div>
           </div>

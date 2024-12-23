@@ -15,9 +15,12 @@ const placeOrder = async (req, res) => {
       items: req.body.items,
       amount: req.body.amount,
       address: req.body.address,
+      distance: req.body.distance,
     });
     await newOrder.save();
     await userModel.findByIdAndUpdate(req.body.userId, { cartData: {} });
+
+    let distance = newOrder.distance
 
     const line_items = req.body.items.map((item) => ({
       price_data: {
@@ -36,7 +39,7 @@ const placeOrder = async (req, res) => {
         product_data: {
           name: "Delivery Charges",
         },
-        unit_amount: 2 * 100 * 80,
+        unit_amount: Math.round(distance / 1000 * 1.5 * 100 * 80),
       },
       quantity: 1,
     });
@@ -107,22 +110,8 @@ const updateStatus = async (req, res) => {
 };
 
 //calculate the distance between the restaurant and customer address
-const calculateDistance = async (req, res) => {
-  const origin = "Bishnu Bihar Neamatpur Asansol 713359"
-  const destination = "Chinakuri Sunderchak 713360"
-  const apiKey = process.env.GOOGLE_MAP_API_KEY
-  const url = `https://maps.gomaps.pro/maps/api/distancematrix/json?destinations=${destination}&origins=${origin}&key=${apiKey}`;
-
-  try {
-    const response = await axios.get(url)
-    // console.log(response);
-    res.json({success: true, data: response.data})
-    console.log(response.data.rows[0].elements[0].distance.value); // this the distance in metres
-    
-  } catch (error) {
-    console.log(error);
-    res.json({success: false, message: "Error"})
-  }
+const updateDistanceCharge = async (req, res) => {
+  
 }
 
-export { placeOrder, verifyOrder, userOrders, listOrders, updateStatus, calculateDistance };
+export { placeOrder, verifyOrder, userOrders, listOrders, updateStatus, updateDistanceCharge };
