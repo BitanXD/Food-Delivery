@@ -39,7 +39,7 @@ const PlaceOrder = () => {
     let orderData = {
       address: data,
       items: orderItems,
-      amount: getTotalCartAmount() + distance * 1000 * 1.5,
+      amount: getTotalCartAmount() + ((distance / 1000) * 1.5),
       distance: distance,
     };
     let response = await axios.post(url + "/api/order/place", orderData, {
@@ -57,7 +57,7 @@ const PlaceOrder = () => {
   const [duration, setDuration] = useState(0)
 
   const getDeliveryCharge = async () => {
-    const origin = `Bishnu Bihar Colony Neamatpur West Bengal`;
+    const origin = `patia bhubaneswar odisha`;
     let destination = `${data.street} ${data.city} ${data.state}`;
     console.log(destination);
     const apiKey = import.meta.env.VITE_MAPS_API_KEY;
@@ -177,7 +177,7 @@ const PlaceOrder = () => {
           <div>
             <div className="cart-total-details">
               <p>Subtotal</p>
-              <p>$ {getTotalCartAmount()}</p>
+              <p>Rs {getTotalCartAmount()}</p>
             </div>
             <hr />
             <div className="cart-total-details">
@@ -188,13 +188,13 @@ const PlaceOrder = () => {
             <div className="cart-total-details">
               <p>Delivery Fee (1.5 per km)</p>
               
-              <p>$ {getTotalCartAmount() === 0 ? 0 : Math.round(distance / 1000 * 1.5)}</p>
+              <p>Rs {getTotalCartAmount() === 0 ? 0 : Math.round(distance / 1000 * 1.5)}</p>
             </div>
             <hr />
             <div className="cart-total-details">
               <b>Total</b>
               <b>
-                $ {getTotalCartAmount() === 0 ? 0 : getTotalCartAmount() + Math.round(distance / 1000 * 1.5)}
+              Rs {getTotalCartAmount() === 0 ? 0 : getTotalCartAmount() + Math.round(distance / 1000 * 1.5)}
               </b>
             </div>
           </div>
