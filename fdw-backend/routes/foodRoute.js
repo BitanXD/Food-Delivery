@@ -4,7 +4,7 @@ import multer from "multer";
 
 const foodRouter = express.Router(); // using this router we can create get / post / delete / etc , any other methods
 
-// image storate engine
+// image storage engine
 const storage = multer.diskStorage({
   destination: "uploads",
   filename: (req, file, cb) => {
