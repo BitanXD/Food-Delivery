@@ -7,6 +7,8 @@
 
 .navbar .logo{
     width: 150px;
+    font-size: 30px;
+    color: rgb(249, 151, 40);
 }
 
 .navbar-menu{
