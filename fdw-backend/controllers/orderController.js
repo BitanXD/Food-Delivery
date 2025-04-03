@@ -3,6 +3,7 @@ import userModel from "../models/userModel.models.js";
 import Stripe from "stripe";
 import axios from "axios"
 
+//stripe api key
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
 // placing user order from the frontend
@@ -22,6 +23,7 @@ const placeOrder = async (req, res) => {
 
     let distance = newOrder.distance
 
+    // stripe line-items integrate
     const line_items = req.body.items.map((item) => ({
       price_data: {
         currency: "inr",
@@ -44,13 +46,15 @@ const placeOrder = async (req, res) => {
       quantity: 1,
     });
 
+    //endpoint
     const session = await stripe.checkout.sessions.create({
       line_items: line_items,
       mode: "payment",
       success_url: `${frontend_url}/verify?success=true&orderId=${newOrder._id}`,
       cancel_url: `${frontend_url}/verify?success=false&orderId=${newOrder._id}`,
     });
-
+    
+//response to frontend
     res.json({ success: true, session_url: session.url });
   } catch (error) {
     console.log(error);
